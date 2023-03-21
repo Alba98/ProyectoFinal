@@ -107,7 +107,11 @@ class ProductosController extends Controller
      */
     public function store(Request $request)
     {
-        // dump($request);
+        if($request->observacion == null){
+            $request->merge([
+                'observacion' => "",
+            ]);
+        }
         $validatedData = $request->validate([
             'nombre' => 'required|unique:productos',
             'idTipo' => 'required|in:1,2,3,4,5,6,7',
@@ -145,7 +149,7 @@ class ProductosController extends Controller
             }
         }
         //return back()->with('success', 'producto creado correctamente.');
-        return redirect()->route('productos.catalogo')->with('success', 'Producto creado correctamente.');
+        return redirect()->route('productos.catalogo')->with('success', 'Producto "'.$producto->nombre.'" creado correctamente.');
     }
 
     /**
@@ -248,6 +252,6 @@ class ProductosController extends Controller
             \File::delete(public_path('thumbnails/' . $filename));
         }
         $producto->delete();
-        return redirect()->route('productos.catalogo')->with('success', 'Producto '.$producto->nombre.' eliminado.');
+        return redirect()->route('productos.catalogo')->with('success', 'Se ha eliminado "'.$producto->nombre.'" del catálogo.');
     }
 }
