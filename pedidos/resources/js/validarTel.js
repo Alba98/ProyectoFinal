@@ -80,6 +80,8 @@ function validarCorreo(correo){
     }catch(err){
         
         var tos = new bootstrap.Toast(toast);
+        var toastBody = document.getElementById('body');
+        toastBody.innerHTML = err;
         tos.show();
         return valido;
     }
@@ -88,12 +90,14 @@ function validarNombre(nombre){
     try{
         var expRegNombre = new RegExp(/^[A-Z][a-z]+(\s+[A-Z]?[a-z]+)*$/);
         if(!expRegNombre.test(nombre)){
-            throw "El nombre no es valido";
+            throw "Por favor, compruebe que el nombre comienza por mayúsculas y que usa caracteres alfabéticos";
         }
         var valido = true;
         return valido;
     }catch(err){
         var tos = new bootstrap.Toast(toast);
+        var toastBody = document.getElementById('body');
+        toastBody.innerHTML = err;
         tos.show();
         
         return valido;

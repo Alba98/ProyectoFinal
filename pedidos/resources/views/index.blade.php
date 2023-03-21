@@ -1,6 +1,14 @@
 @extends('layouts.layout')
 @section('content')
 <div class="container-fluid">
+    @if(Session::has('success'))
+    <div class="alert alert-success">
+        {{ Session::get('success') }}
+        @php
+        Session::forget('success');
+        @endphp
+    </div>
+    @endif
     <div class="row img-cover test d-flex justify-content-center my-3">
         <div class="col-11">
             <img class="img-fluid w-100 h-100" src="{{ asset('images/imagen2.jpeg') }}" alt="Imagen presentacion">
