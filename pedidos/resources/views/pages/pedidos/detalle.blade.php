@@ -125,9 +125,9 @@
                         @foreach ($pedido->productosPedido as $producto)
                             <tr class='lineaPedido'>
                                 <td>
-                                    <img class="card-img-top img-fluid img-thumbnail" style="width: 110px" alt="{{$producto->nombre}}" 
-                                        @if( file_exists('thumbnails/'.$producto->id.'.png') )
-                                            src="{{ asset('thumbnails/'.$producto->id.'.png') }}" 
+                                    <img class="card-img-top img-fluid img-thumbnail" style="width: 110px" alt="{{$producto->producto->nombre}}" 
+                                        @if( file_exists('thumbnails/'.$producto->idProducto.'.png') )
+                                            src="{{ asset('thumbnails/'.$producto->idProducto.'.png') }}" 
                                         @else 
                                             src="{{ asset('images/placeholder.png') }}" 
                                         @endif
