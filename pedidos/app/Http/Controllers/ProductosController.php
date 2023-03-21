@@ -113,7 +113,7 @@ class ProductosController extends Controller
             'idTipo' => 'required|in:1,2,3,4,5,6,7',
             'pedidoMinimo' => 'required|min:1',
             'precio' => 'required|numeric|gt:0',
-            'observacion' => 'nullable|min:1|max:1000'
+            'observacion' => 'nullable|min:0|max:1000'
         ], [
             'nombre.required' => 'Nombre es obligatorio.',
             'nombre.unique' => 'Nombre ya existe.',
