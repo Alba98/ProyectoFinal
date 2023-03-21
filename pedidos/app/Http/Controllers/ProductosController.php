@@ -84,8 +84,7 @@ class ProductosController extends Controller
                 "tipos" => $tipos,
                 "id" => $id,
             ]);
-        }
-        else {
+        } else {
             return redirect()->route('productos.index');
         }
     }
@@ -114,7 +113,6 @@ class ProductosController extends Controller
             'idTipo' => 'required|in:1,2,3,4,5,6,7',
             'pedidoMinimo' => 'required|min:1',
             'precio' => 'required|numeric|gt:0',
-            'file.*' => 'image|mimes:png|max:2048',
             'observacion' => 'nullable|min:1|max:1000'
         ], [
             'nombre.required' => 'Nombre es obligatorio.',
@@ -122,7 +120,6 @@ class ProductosController extends Controller
             'idTipo.in' => 'Tipo es obligatorio.',
             'pedidoMinimo.required' => 'Pedido minimo es obligatorio.',
             'precio.required' => 'Precio es obligatorio.',
-            'file.image' => 'El archivo tiene que se una foto en formato png',
             'observacion' => 'La observacion no puede ser tan larga'
         ]);
 
@@ -130,28 +127,25 @@ class ProductosController extends Controller
 
         //Recibimos el archivo y lo guardamos en la carpeta storage/app/public
         // Si recibe un POST
-        if ($request->isMethod('POST')) {
+        //Recibimos el archivo y lo guardamos en la carpeta storage/app/public
+        if ($request->file('file')!=null) {
             //con el método getMimeType() obtengo el tipo de archivo "image/png"
-            // dd($request->file('file'));
-
             //Si el archivo que suben no es una imagen png no permite subirla.
-            if ($request->file('file')->getMimeType() !== "image/png") {
-                // echo "El tipo de archivo no es válido";
-            } else {
+            if ($request->file('file')->getMimeType() == "image/png") {
                 $file = $request->file('file');
                 //Cogemos el nombre que el usuario a introducido
                 $name = $producto->id;
                 //Para almacenar la imagen poniendole un nombre
-                $file->storeAs('',$name.".".$file->extension(),'public');
-
+                $file->storeAs('', $name . "." . $file->extension(), 'public');
                 $filePath = public_path('/thumbnails');
                 $img = Image::make($file->path());
                 $img->resize(110, 110, function ($const) {
                     $const->aspectRatio();
-                    })->save($filePath.'/'.$name.".".$file->extension());
+                })->save($filePath . '/' . $name . "." . $file->extension());
             }
         }
-        return back()->with('success', 'producto creado correctamente.');
+        //return back()->with('success', 'producto creado correctamente.');
+        return redirect()->route('productos.catalogo')->with('success', 'Producto creado correctamente.');
     }
 
     /**
@@ -214,40 +208,32 @@ class ProductosController extends Controller
             'idTipo' => 'in:1,2,3,4,5,6,7',
             'pedidoMinimo' => 'required|min:1',
             'precio' => 'required|numeric|gt:0',
-            'foto.*' => 'image|mimes:png|max:2048'
         ], [
             'nombre.required' => 'Nombre es obligatorio.',
             'idTipo.in' => 'Tipo es obligatorio.',
             'pedidoMinimo.required' => 'Pedido minimo es obligatorio.',
-            'foto.mimes' => 'El archivo tiene que se una foto en formato png'
         ]);
 
         //Recibimos el archivo y lo guardamos en la carpeta storage/app/public
-        // Si recibe un POST
-        if ($request->isMethod('POST')) {
+        if ($request->file('file')!=null) {
             //con el método getMimeType() obtengo el tipo de archivo "image/png"
-            // dd($request->file('file'));
-
             //Si el archivo que suben no es una imagen png no permite subirla.
-            if ($request->file('file')->getMimeType() !== "image/png") {
-                // echo "El tipo de archivo no es válido";
-            } else {
+            if ($request->file('file')->getMimeType() == "image/png") {
                 $file = $request->file('file');
                 //Cogemos el nombre que el usuario a introducido
                 $name = $producto->id;
                 //Para almacenar la imagen poniendole un nombre
-                $file->storeAs('',$name.".".$file->extension(),'public');
-
+                $file->storeAs('', $name . "." . $file->extension(), 'public');
                 $filePath = public_path('/thumbnails');
                 $img = Image::make($file->path());
                 $img->resize(110, 110, function ($const) {
                     $const->aspectRatio();
-                    })->save($filePath.'/'.$name.".".$file->extension());
+                })->save($filePath . '/' . $name . "." . $file->extension());
             }
         }
-
         $producto->update($validatedData);
-        return back()->with('success', 'producto actualizado correctamente.');
+        // return Redirect()->back()->with('success', 'producto actualizado correctamente.');
+        return redirect()->route('productos.catalogo')->with('success', 'Producto actualizado correctamente.');
     }
 
     /**
@@ -257,11 +243,11 @@ class ProductosController extends Controller
     {
         $filename = $producto->id . ".png";
         // dd(public_path('images/'.$filename));
-        if (\File::exists(public_path('images/'.$filename))) {
-            \File::delete(public_path('images/'.$filename));
-            \File::delete(public_path('thumbnails/'.$filename));
+        if (\File::exists(public_path('images/' . $filename))) {
+            \File::delete(public_path('images/' . $filename));
+            \File::delete(public_path('thumbnails/' . $filename));
         }
         $producto->delete();
-        return redirect()->route('productos.catalogo');
+        return redirect()->route('productos.catalogo')->with('success', 'Producto '.$producto->nombre.' eliminado.');
     }
 }

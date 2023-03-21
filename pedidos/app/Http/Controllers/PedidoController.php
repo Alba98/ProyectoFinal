@@ -14,6 +14,7 @@ use App\Models\ProductosPedido;
 use App\Mail\MailSender;
 use App\Models\Productos;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class PedidoController extends Controller
@@ -191,12 +192,15 @@ class PedidoController extends Controller
             $pedido->fecha = $request->fecha;
             $pedido->idPersona = $request->idPersona;
             $pedido->idEstado = 1;
-            if($request->observaciones != null)
+            if($request->observaciones != null){
                 $pedido->observacion = $request->observaciones;
+            }else{
+                $pedido->observacion = "Sin observaciones por el cliente";
+            }
             $pedido->save();
             
             //get idPedido and insert in producto pedidos taking produtos from sesion carrito
-            // $idPedido = Pedido::latest('id')->first()->id;
+            //$idPedido = Pedido::latest('id')->first()->id;
             $idPedido = $pedido->id;
 
             $carrito = session('carrito');
@@ -209,18 +213,20 @@ class PedidoController extends Controller
                 $productoPedido->save();
             }
 
-            // //enviar mail
-            // $mailData = ['title'=>'Pedido realizado',
-            //     'body'=>'Su pedido número '.$pedido->id . ' acaba de llegar ' . $pedido->nombre,
-            //     'productosPedido'=>$carrito
-            // ];
-            // Mail::to($persona->email)->send(new MailSender($mailData));
+            //enviar mail de confirmacion
+            $personaid = $request->idPersona;
+            $persona = DB::table('datos_personas')->where('id', $personaid)->first();
+            $productosPedido = ProductosPedido::where('idPedido','=',$idPedido)->get();
+            $mailData = ['title' => 'Pedido recibido.',
+                'body' => 'Hemos recibido su encargo con número de pedido '.$idPedido,
+                'productosPedido' => $productosPedido];
 
+            Mail::to($persona->email)->send(new MailSender($mailData));
             //clear carrito and persona
             session()->forget('carrito');
             session()->forget('persona');
 
-            return redirect()->route('pedidos.index');
+            return redirect()->route('home')->with('success', 'Pedido recibido, ¡muchas gracias!.');
         }
     }
 

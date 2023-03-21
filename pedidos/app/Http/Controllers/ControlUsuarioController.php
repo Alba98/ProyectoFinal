@@ -37,7 +37,7 @@ class ControlUsuarioController extends Controller
     }
     public function crearusunormal(Request $request)
     {
-       
+
         $validated = $request->validate([
             'nombre' => 'required|string|max:30',
             'correo' => 'required|email',
@@ -48,7 +48,7 @@ class ControlUsuarioController extends Controller
         //comprobacion de existencia de usuario
         $usuariodato = User::where('email', '=', $validated['correo'])->first();
         if ($usuariodato) {
-            return redirect()->back()->withInput()->withErrors(['status' => 'ya existe un usuario']);
+            return redirect()->back()->withInput()->withErrors(['status' => 'Ya existe un usuario con ese Email']);
         }
 
         DatosPersona::create([
@@ -57,19 +57,25 @@ class ControlUsuarioController extends Controller
             'telefono'  => $validated['telefono'],
         ]);
         $persona = DatosPersona::latest('id')->first();
-        
-       
-        $datousuario = DatosPersona::where('email', '=', $validated['correo'])->first();
-        
         $datousuario = DatosPersona::where('email', '=', $validated['correo'])->first();
         User::create([
             'id_persona' => $datousuario->id,
             'email' => $validated['correo'],
             'password' => Hash::make($validated['contrasena']),
         ]);
-        //dd($datousuario);
         $tipos = TipoProducto::all();
-        
-        return view('pages.carrito.index', ["tipos" => $tipos,"persona"=>$persona]);
+        $credentials = [
+            'email' => $validated['correo'],
+            'password' => $validated['contrasena']
+        ];
+        if (Auth::attempt($credentials)) {
+            return redirect(route('datosPersona.index'));
+        } else {
+            if (session('carrito') != null) {
+                return view('pages.carrito.index', ["tipos" => $tipos, "persona" => $persona]);
+            } else {
+                return redirect(route('productos.index'));
+            }
+        }
     }
 }

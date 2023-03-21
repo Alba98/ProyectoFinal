@@ -46,14 +46,14 @@
                         @endif
                     </div>
                     <div class="col-6 required">
-                        <label for="pedidoMinimo" class="form-label">Pedido Minimo</label>
+                        <label for="pedidoMinimo" class="form-label">Pedido Mínimo</label>
                         <input type="number" min="0" class="form-control" id="pedidoMinimo" name="pedidoMinimo" @if ($producto) value="{{$producto->pedidoMinimo}}" @endif>
                         @if ($errors->has('pedidoMinimo'))
                         <span class="text-danger">{{ $errors->first('pedidoMinimo') }}</span>
                         @endif
                     </div>
                     <div class="col-12">
-                        <label for="observacion" class="form-label">Observacion</label>
+                        <label for="observacion" class="form-label">Observaciones</label>
                         <textarea class="form-control" id="observacion" rows="3" name="observacion">@if($producto){{$producto->observacion}}@endif</textarea>
                         @if ($errors->has('observacion'))
                         <span class="text-danger">{{ $errors->first('observacion') }}</span>
@@ -67,7 +67,7 @@
                         @if ($errors->has('file'))
                         <span class="text-danger">{{ $errors->first('file') }}</span>
                         @endif
-                        <img id="previoImagen" @if($producto) @if( file_exists('images/'.$producto->id.'.png') )
+                        <img id="previoImagen" @if($producto) @if(file_exists('images/'.$producto->id.'.png'))
                         src="{{ asset('images/'.$producto->id.'.png') }}"
                         @else
                         src="{{ asset('images/placeholder.png') }}"
